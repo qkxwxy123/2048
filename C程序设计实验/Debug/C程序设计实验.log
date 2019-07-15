@@ -1,0 +1,5 @@
+﻿  main.cpp
+F:\VS_test\C程序设计实验\main.cpp(43): warning C4244: “参数”: 从“time_t”转换到“unsigned int”，可能丢失数据
+F:\VS_test\C程序设计实验\main.cpp(220): error C2065: “Lstr”: 未声明的标识符
+F:\VS_test\C程序设计实验\main.cpp(219): error C4996: 'itoa': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _itoa. See online help for details.
+  F:\Windows Kits\10\Include\10.0.17763.0\ucrt\stdlib.h(1323): note: 参见“itoa”的声明

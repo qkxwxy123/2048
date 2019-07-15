@@ -1,0 +1,5 @@
+﻿  main.cpp
+F:\VS_test\C程序设计实验\main.cpp(43): warning C4244: “参数”: 从“time_t”转换到“unsigned int”，可能丢失数据
+F:\VS_test\C程序设计实验\main.cpp(221): warning C4302: “类型强制转换”: 从“char *”到“TCHAR”截断
+F:\VS_test\C程序设计实验\main.cpp(253): warning C4302: “类型强制转换”: 从“char *”到“TCHAR”截断
+  C程序设计实验.vcxproj -> F:\VS_test\C程序设计实验\x64\Debug\C程序设计实验.exe
