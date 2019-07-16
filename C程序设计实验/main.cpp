@@ -8,15 +8,23 @@ struct Node
 {
 	int x, y, num;
 };
-Node nodes[17];
+Node nodes[10000];                                                          //中间存在置空，需要开大
 int getScore = 0, nodeNum = 0;
 
-void initAll();                                                         //开始后的图形界面初始化
-void firstGraph();														//欢迎界面初始化
-void restartCount();                                                    //重新开始按钮
-void moveNode();                                                        //移动
-//void produceNode();                                                     //产生一个随即方块
-void redraw();                                                          //更新画面
+void initAll();                                                             //开始后的图形界面初始化
+void firstGraph();				     							 	  		//欢迎界面初始化
+void reStart();                                                             //重新开始按钮
+void moveNode();                                                            //移动
+void proNode();                                                             //产生一个随即方块
+void redraw();                                                              //更新画面
+int check();                                                                //检查格子是否已经满
+int moveToUp();																//向上
+int moveToDown();															//向下
+int moveToLeft();															//向左
+int moveToRight();															//向右
+int checkWin();                                                             //检查是否达到2048
+void start();                                                               //开始
+
 
 int main(void)
 {
@@ -27,10 +35,12 @@ int main(void)
 	{
 		m = GetMouseMsg();
 		if (m.uMsg == WM_LBUTTONDOWN && m.x >= 140 && m.x <= 240 && m.y >= 200 && m.y <= 300)
+		{
 			initAll();
+			start();
+		}
 		else if (m.uMsg == WM_LBUTTONDOWN && m.x >= 350 && m.x <= 450 && m.y >= 200 && m.y <= 300)
 			return 0;
-		moveNode();
 	}
 	_getch();
 	closegraph();
@@ -40,8 +50,11 @@ int main(void)
 void initAll()
 {
 	int i, j, r, g, b, firstLocX, firstLocY, firstNum;
-	srand(time(NULL));
 	TCHAR s[6] = _T("分数:");
+	MOUSEMSG m;
+	nodeNum = 0, getScore = 0;
+	memset(nodes, 0, sizeof(Node) * 10000);
+	srand(time(NULL));
 	//初始化背景
 	loadimage(NULL, _T("F:\\VS_test\\C程序设计实验\\xk.jpg"));
 
@@ -95,7 +108,7 @@ void initAll()
 
 		if (nodeNum == 1)
 		{
-			if (firstLocX == nodes[0].x && firstLocY == nodes[0].y)
+			if (firstLocX == (nodes[0].x - 40) / 100 && firstLocY == (nodes[0].y - 30) / 100)
 				continue;
 		}
 		nodes[nodeNum].x = (firstLocX - 40) / 100;
@@ -114,11 +127,9 @@ void initAll()
 		}
 	}
 
-
 	//重新开始按钮
 	settextstyle(36, 0, _T("隶书"));
 	outtextxy(450, 350, _T("重新开始"));
-	//restartCount();
 }
 //开始界面
 void firstGraph()
@@ -138,68 +149,81 @@ void firstGraph()
 	outtextxy(140, 200, _T("开始  退出"));
 	settextstyle(20, 0, _T("隶书"));
 	drawtext(_T("规则：用键盘进行上下左右操作\n控制方块左移右移直到合成2048"), &r, DT_WORDBREAK);
+	memset(nodes, 0, sizeof(Node) * 10000);
 }
-
-void restartCount()
+//重新开始
+void reStart()
 {
 	MOUSEMSG m;
+	setfillcolor(RGB(238, 130, 238));
+	fillrectangle(190, 200, 430, 250);
+	setbkmode(TRANSPARENT);
+	settextcolor(RGB(25, 25, 112));
+	settextstyle(48, 0, _T("隶书"));
+	outtextxy(200, 200, _T("重新开始"));
 	while (1)
 	{
 		m = GetMouseMsg();
-		if (m.uMsg == WM_LBUTTONDOWN && m.x >= 450 && m.x <= 600 && m.y >= 350 && m.y <= 400)
+		if (m.uMsg == WM_LBUTTONDOWN && m.x >= 240 && m.x <= 480 && m.y >= 200 && m.y <= 300)
 		{
 			firstGraph();
-			return;
+			break;
 		}
 	}
 }
-
+//移动点
 void moveNode()
 {
 	char ch;
-	int i, j;
-	int hNode;
-	Node exNode;
+	MOUSEMSG m;
 	while (_kbhit())
 	{
 		ch = _getch();
+		if (checkWin())
+		{
+			reStart();
+			return;
+		}
 		if (ch == 'a')                                                                      //键盘左箭头
 		{
-			//produceNode();
-			for (i = 0; i < nodeNum; i++)
+			if (!moveToLeft())
 			{
-				hNode = 0;
-				if (nodes[i].x > 0)
-				{
-					for (j = 0; j < nodeNum && j != i; j++)
-					{
-						if (nodes[i].x == nodes[j].x + 1 && nodes[i].y == nodes[j].y && nodes[i].num == nodes[j].num)
-						{
-							nodes[j].num *= 2;
-							nodes[i].x = nodes[i].y = nodes[i].num = 0;
-							exNode = nodes[i];
-							nodes[i] = nodes[nodeNum];
-							nodes[nodeNum] = exNode;
-							nodeNum--;
-							hNode = 1;
-							getScore++;
-							break;
-						}
-					}
-					if (!hNode)
-						nodes[i].x--;
-				}
+				reStart();
+				return;
 			}
-			redraw();
+		}
+		if (ch == 'd')                                                                      //键盘右箭头
+		{
+			if (!moveToRight())
+			{
+				reStart();
+				return;
+			}
+		}
+		if (ch == 'w')                                                                       //键盘上箭头
+		{
+			if (!moveToUp())
+			{
+				reStart();
+				return;
+			}
+		}
+		if (ch == 's')                                                                       //键盘下箭头
+		{
+			if (!moveToDown())
+			{
+				reStart();
+				return;
+			}
 		}
 	}
 }
-
+//每次移动重新画图
 void redraw()
 {
 	int i, j, r, g, b;
-	char squareNum[10];                                                 //将方块中数字转字符
-	char str[10];
+	TCHAR squareNum[10];                                                 //将方块中数字转字符
+	//char str[10];
 	TCHAR s[6] = _T("分数:");
 	//绘制
 	loadimage(NULL, _T("F:\\VS_test\\C程序设计实验\\xk.jpg"));
@@ -217,8 +241,8 @@ void redraw()
 	settextstyle(&f);                                                 //设置抗锯齿效果
 	setbkmode(TRANSPARENT);
 	outtextxy(450, 20, s);                                            //在(500, 20)输出“分数”
-	_itoa_s(getScore, str, 10);
-	outtextxy(490, 80, (TCHAR)str);
+	_stprintf_s(squareNum, _T("%d"), getScore);
+	outtextxy(490, 80, squareNum);
 
 	//初始化方块
 	for (i = 0; i < 4; i++)
@@ -249,7 +273,236 @@ void redraw()
 
 	for (i = 0; i < nodeNum; i++)
 	{
-		_itoa_s(nodes[i].num, squareNum, 10);
-		outtextxy(nodes[i].x * 100 + 40, nodes[i].y * 100 + 30, (TCHAR)squareNum);
+		if (nodes[i].num == 0)
+			continue;
+		_stprintf_s(squareNum, _T("%d"), nodes[i].num);
+		outtextxy(nodes[i].x * 100 + 40, nodes[i].y * 100 + 30, squareNum);
+	}
+}
+//产生新的点
+void proNode()                                                                         //产生新的方块
+{
+	int newX, newY, newNum, i, isExist = 0;
+	while (1)
+	{
+		isExist = 0;
+		newX = rand() % 4;
+		newY = rand() % 4;
+		newNum = rand() % 3;
+		for (i = 0; i < nodeNum; i++)                                                   //判断产生的方块位置是否存在方块
+		{
+			if (newX == nodes[i].x && newY == nodes[i].y && nodes[i].num != 0)
+			{
+				isExist = 1;
+				break;
+			}
+		}
+		if (isExist)
+			continue;
+		nodes[nodeNum].x = newX;
+		nodes[nodeNum].y = newY;
+		switch (newNum)
+		{
+		case 0:
+			nodes[nodeNum].num = 2, nodeNum++;
+			break;
+		case 1:
+			nodes[nodeNum].num = 4, nodeNum++;
+			break;
+		case 2:
+			nodes[nodeNum].num = 8, nodeNum++;
+			break;
+		}
+		return;
+	}
+}
+//检查是否满16个且未达到2048
+int check()
+{
+	int i;
+	int exsitSquare = 0;
+	for (i = 0; i < nodeNum; i++)
+	{	
+		if (nodes[i].num != 0)
+			exsitSquare++;
+		if (exsitSquare == 16)
+		{
+			setbkmode(TRANSPARENT);
+			settextcolor(RGB(25, 25, 112));
+			settextstyle(48, 0, _T("隶书"));
+			outtextxy(250, 120, _T("失败！"));
+			return 0;
+		}
+	}
+	return 1;
+}
+//向左
+int moveToLeft()
+{
+	int i, j, hNode;
+	if (!check())
+		return 0;
+	for (i = 0; i < nodeNum; i++)
+	{
+		hNode = 0;
+		if (nodes[i].x > 0)
+		{
+			for (j = 0; j < nodeNum; j++)
+			{
+				if (j == i)
+					continue;
+				if (nodes[i].x == nodes[j].x + 1 && nodes[i].y == nodes[j].y && nodes[i].num == nodes[j].num)
+				{
+					nodes[j].num *= 2;
+					nodes[i].x = nodes[i].y = nodes[i].num = 0;
+					hNode = 1;
+					getScore++;
+					break;
+				}
+				else if (nodes[i].x == nodes[j].x + 1 && nodes[i].y == nodes[j].y && nodes[i].num != nodes[j].num)
+					hNode = 1;
+			}
+			if (!hNode)
+				nodes[i].x--;
+		}
+	}
+	proNode();
+	redraw();
+	return 1;
+}
+//向右
+int moveToRight()
+{
+	int i, j, hNode;
+	if (!check())
+		return 0;
+	for (i = 0; i < nodeNum; i++)
+	{
+		hNode = 0;
+		if (nodes[i].x >= 0 && nodes[i].x < 3)
+		{
+			for (j = 0; j < nodeNum; j++)
+			{
+				if (j == i)
+					continue;
+				if (nodes[i].x == nodes[j].x - 1 && nodes[i].y == nodes[j].y && nodes[i].num == nodes[j].num)
+				{
+					nodes[j].num *= 2;
+					nodes[i].x = nodes[i].y = nodes[i].num = 0;
+					hNode = 1;
+					getScore++;
+					break;
+				}
+				else if (nodes[i].x == nodes[j].x - 1 && nodes[i].y == nodes[j].y && nodes[i].num != nodes[j].num)
+					hNode = 1;
+			}
+			if (!hNode)
+				nodes[i].x++;
+		}
+	}
+	proNode();
+	redraw();
+	return 1;
+}
+//向上
+int moveToUp()
+{
+	int i, j, hNode;
+	if (!check())
+		return 0;
+	for (i = 0; i < nodeNum; i++)
+	{
+		hNode = 0;
+		if (nodes[i].y > 0)
+		{
+			for (j = 0; j < nodeNum; j++)
+			{
+				if (j == i)
+					continue;
+				if (nodes[i].y == nodes[j].y + 1 && nodes[i].x == nodes[j].x && nodes[i].num == nodes[j].num)
+				{
+					nodes[j].num *= 2;
+					nodes[i].x = nodes[i].y = nodes[i].num = 0;
+					hNode = 1;
+					getScore++;
+					break;
+				}
+				else if (nodes[i].y == nodes[j].y + 1 && nodes[i].x == nodes[j].x && nodes[i].num != nodes[j].num)
+					hNode = 1;
+			}
+			if (!hNode)
+				nodes[i].y--;
+		}
+	}
+	proNode();
+	redraw();
+	return 1;
+}
+//向下
+int moveToDown()
+{
+	int i, j, hNode;
+	if (!check())
+		return 0;
+	for (i = 0; i < nodeNum; i++)
+	{
+		hNode = 0;
+		if (nodes[i].y >= 0 && nodes[i].y < 3)
+		{
+			for (j = 0; j < nodeNum; j++)
+			{
+				if (j == i)
+					continue;
+				if (nodes[i].y == nodes[j].y - 1 && nodes[i].x == nodes[j].x && nodes[i].num == nodes[j].num)
+				{
+					nodes[j].num *= 2;
+					nodes[i].x = nodes[i].y = nodes[i].num = 0;
+					hNode = 1;
+					getScore++;
+					break;
+				}
+				else if (nodes[i].y == nodes[j].y - 1 && nodes[i].x == nodes[j].x && nodes[i].num != nodes[j].num)
+					hNode = 1;
+			}
+			if (!hNode)
+				nodes[i].y++;
+		}
+	}
+	proNode();
+	redraw();
+	return 1;
+}
+//检查是否达到2048
+int checkWin()
+{
+	int i;
+	for (i = 0; i < nodeNum; i++)
+	{
+		if (nodes[i].num == 2048)
+		{
+			setbkmode(TRANSPARENT);
+			settextcolor(RGB(255, 69, 0));
+			settextstyle(48, 0, _T("黑体"));
+			outtextxy(250, 150, _T("成功！"));
+			return 1;
+		}
+	}
+	return 0;
+}
+//开始，控制实现鼠标点击重新开始和键盘操作移动
+void start()
+{
+	MOUSEMSG m;
+	int i, j, k;
+	while (1)
+	{
+		FlushMouseMsgBuffer();
+		m = GetMouseMsg();
+		if (m.uMsg == WM_LBUTTONDOWN && m.x >= 450 && m.x <= 600 && m.y >= 350 && m.y <= 400)                                   //如果重新开始，绘制主界面并返回主函数
+		{
+			firstGraph();
+			return;
+		}
+		moveNode();
 	}
 }
