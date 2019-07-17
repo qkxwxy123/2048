@@ -1,93 +1,117 @@
+ï»¿/*----------------------------------------------------------------------------------------------------------
+  -----------------------------------Copyright Â© 2019 kxxy. All rights reserved.----------------------------
+  ----------------------------------------------------------------------------------------------------------*/
+
+/*-------------------------------è¯´æ˜-----------------------------------------*/
+/*ç”¨æˆ·ç™»å½•æœºåˆ¶ï¼Œä¸‹æ¬¡ç™»é™†å¯ä»¥æ‰“å¼€ä¸Šæ¬¡è®°å½•ï¼Œä¹Ÿå¯ä»¥é‡æ–°å¼€å§‹*/
+/*è®°å½•ä»¥ä¸€è¡Œ3ä¸ªæ•°å­—ï¼Œåˆ†åˆ«å­˜å‚¨x,y,num,ä¸ºæ ‡å‡†å­˜å‚¨nodesï¼Œç›´åˆ°å­˜å®Œè¯»å–ä¸‹ä¸€è¡Œ*/
+/*è®°å½•IDä¸‹ç¬¬ä¸€è¡Œä¸ºnodeNum å’Œ getScore*/
 #include <stdio.h>
 #include <conio.h>
 #include <graphics.h>
 #include <stdlib.h>
 #include <time.h>
 #include <math.h>
+#include <string.h>
 #define PI 3.1415926535
 
 struct Node
 {
 	int x, y, num;
 };
-Node nodes[10000];                                                          //ÖĞ¼ä´æÔÚÖÃ¿Õ£¬ĞèÒª¿ª´ó
+Node nodes[10000];                                                          //ä¸­é—´å­˜åœ¨ç½®ç©ºï¼Œéœ€è¦å¼€å¤§
 int getScore = 0, nodeNum = 0;
+TCHAR Identity1[20];                                          //ç”¨æˆ·è¾“å…¥çš„ID
+char Identity[20];                                            //è½¬æ¢æˆå­—ç¬¦ä¸²çš„ID
+
 
 struct Color
 {
-	int r, g, b;                                                            //×ÖÌå¼°±³¾°ÑÕÉ«×é³É
+	int r, g, b;                                                            //å­—ä½“åŠèƒŒæ™¯é¢œè‰²ç»„æˆ
 };
-Color bColor[] = { {255, 231, 186}, {238, 216, 174}, {205, 186, 150},       //±³¾°É«¹²16ÖÖ
+Color bColor[] = { {255, 231, 186}, {238, 216, 174}, {205, 186, 150},       //èƒŒæ™¯è‰²å…±16ç§
 				   {139, 126, 102}, {255, 165, 79}, {238, 154, 73},
 				   {205, 133, 63}, {139, 90, 43}, {255, 127, 36},
 				   {238, 118, 32}, {205, 102, 29}, {139, 69, 19},
 				   {255, 211, 155}, {238, 197, 145}, {205, 170, 125},
 				   {139, 115, 85} };
-Color cColor[] = { {131, 111, 255}, {122, 103, 238}, {105, 89, 205},        //×ÖÌåÉ«£¬×î´ó2^11Òò´ËÓÉ11ÖÖ
+Color cColor[] = { {131, 111, 255}, {122, 103, 238}, {105, 89, 205},        //å­—ä½“è‰²ï¼Œæœ€å¤§2^11å› æ­¤ç”±11ç§
 				   {71, 60, 139}, {72, 118, 255}, {67, 110, 238},
 				   {58, 95, 205}, {39, 64, 139}, {0, 0, 255},
 				   {0, 0, 238}, {0, 0, 205} };
 
-void initAll();                                                             //¿ªÊ¼ºóµÄÍ¼ĞÎ½çÃæ³õÊ¼»¯
-void firstGraph();				     							 	  		//»¶Ó­½çÃæ³õÊ¼»¯
-void reStart();                                                             //ÖØĞÂ¿ªÊ¼°´Å¥
-int moveNode();                                                             //ÒÆ¶¯
-void proNode();                                                             //²úÉúÒ»¸öËæ¼´·½¿é
-void redraw();                                                              //¸üĞÂ»­Ãæ
-int check();                                                                //¼ì²é¸ñ×ÓÊÇ·ñÒÑ¾­Âú
-int moveToUp();																//ÏòÉÏ
-int moveToDown();															//ÏòÏÂ
-int moveToLeft();															//Ïò×ó
-int moveToRight();															//ÏòÓÒ
-int checkWin();                                                             //¼ì²éÊÇ·ñ´ïµ½2048
-void start();                                                               //¿ªÊ¼
-
+void initAll();                                                             //å¼€å§‹åçš„å›¾å½¢ç•Œé¢åˆå§‹åŒ–
+void firstGraph();				     							 	  		//æ¬¢è¿ç•Œé¢åˆå§‹åŒ–
+void reStart();                                                             //é‡æ–°å¼€å§‹æŒ‰é’®
+int moveNode();                                                             //ç§»åŠ¨
+void proNode();                                                             //äº§ç”Ÿä¸€ä¸ªéšå³æ–¹å—
+void redraw();                                                              //æ›´æ–°ç”»é¢
+int check();                                                                //æ£€æŸ¥æ ¼å­æ˜¯å¦å·²ç»æ»¡
+int moveToUp();																//å‘ä¸Š
+int moveToDown();															//å‘ä¸‹
+int moveToLeft();															//å‘å·¦
+int moveToRight();															//å‘å³
+int checkWin();                                                             //æ£€æŸ¥æ˜¯å¦è¾¾åˆ°2048
+void start();                                                               //å¼€å§‹
+void TcharToChar(const TCHAR* tchar, char* _char);                          //TCHARè½¬char
+int Login();                                                                //ç™»é™†é€‰é¡¹
+void deleteN(char*);                                                        //åˆ é™¤æ¢è¡Œç¬¦
+void dataFind();                                                            //æ–‡ä»¶ä¸­æ•°æ®æ‰¾å›
+int preserve();                                                             //å‚¨å­˜æ¡£æ¡ˆ
 
 int main(void)
 {
 	MOUSEMSG m;
-	initgraph(600, 400);                                                     //³õÊ¼»¯´´½¨Í¼
-	firstGraph();                                                            //´´½¨Ê×Ò³£¨»¶Ó­½çÃæ£©
+	initgraph(600, 400);                                                     //åˆå§‹åŒ–åˆ›å»ºå›¾
+	firstGraph();                                                            //åˆ›å»ºé¦–é¡µï¼ˆæ¬¢è¿ç•Œé¢ï¼‰
 	while (1)
 	{
 		m = GetMouseMsg();
-		if (m.uMsg == WM_LBUTTONDOWN && m.x >= 140 && m.x <= 240 && m.y >= 200 && m.y <= 300)    //¶Áµ½Êó±êµã»÷¡°¿ªÊ¼ÓÎÏ·¡±
+		if (m.uMsg == WM_LBUTTONDOWN && m.x >= 140 && m.x <= 240 && m.y >= 200 && m.y <= 300)    //è¯»åˆ°é¼ æ ‡ç‚¹å‡»â€œå¼€å§‹æ¸¸æˆâ€
 		{
-			initAll();                                                        //³õÊ¼»¯ÓÎÏ·½çÃæ£¬Éú³ÉÁ½¸ö¿é
-			start();                                                          //¿ªÊ¼ÓÎÏ·
+			initAll();                                                        //åˆå§‹åŒ–æ¸¸æˆç•Œé¢ï¼Œç”Ÿæˆä¸¤ä¸ªå—
+			start();                                                          //å¼€å§‹æ¸¸æˆ
 		}
-		else if (m.uMsg == WM_LBUTTONDOWN && m.x >= 350 && m.x <= 450 && m.y >= 200 && m.y <= 300)         //¶Áµ½Êó±êĞÅÏ¢µã»÷¡°ÍË³öÓÎÏ·¡±
-			return 0;                                                                                      //½áÊø³ÌĞò
+		else if (m.uMsg == WM_LBUTTONDOWN && m.x >= 350 && m.x <= 450 && m.y >= 200 && m.y <= 300)         //è¯»åˆ°é¼ æ ‡ä¿¡æ¯ç‚¹å‡»â€œé€€å‡ºæ¸¸æˆâ€
+			return 0;                                                                                      //ç»“æŸç¨‹åº
+		else if (m.uMsg == WM_LBUTTONDOWN && m.x >= 500 && m.x <= 600 && m.y >= 0 && m.y <= 50)
+		{
+			if (!Login())
+				continue;
+			dataFind();
+			redraw();
+			start();
+		}
 	}
 	_getch();
 	closegraph();
 	return 0;
 }
-//³õÊ¼»¯ÓÎÏ·½çÃæ
+//åˆå§‹åŒ–æ¸¸æˆç•Œé¢
 void initAll()
 {
-	int i, j, firstLocX, firstLocY, firstNum;                                                                //firstLocX¼°Y±íÊ¾Ëæ»ú³öµÚ0-3¸ö¸ñ×Ó£¬ÒÔ´ËÈ·¶¨Î»ÖÃ
-	TCHAR s[6] = _T("·ÖÊı:");                                                                                //¡°·ÖÊı£º¡±×Ö·û´®Ö»ÄÜÊÇTCHAR²ÅÄÜÏÔÊ¾ÔÚ»­ÃæÉÏ
-	nodeNum = 0, getScore = 0;																				 //³õÊ¼»¯½ÚµãÊı£¬ËùµÃ·ÖÊı
-	memset(nodes, 0, sizeof(Node) * 10000);                                                                  //Çå¿Õ½ÚµãĞÅÏ¢
-	srand(time(NULL));                                                                                       //Ê±¼äÖÖ×Ó£¬Ëæ»úÊıÓÃ
-	//³õÊ¼»¯±³¾°
-	loadimage(NULL, _T("F:\\VS_test\\C³ÌĞòÉè¼ÆÊµÑé\\xk.jpg"));
+	int i, j, firstLocX, firstLocY, firstNum;                                                                //firstLocXåŠYè¡¨ç¤ºéšæœºå‡ºç¬¬0-3ä¸ªæ ¼å­ï¼Œä»¥æ­¤ç¡®å®šä½ç½®
+	TCHAR s[6] = _T("åˆ†æ•°:");                                                                                //â€œåˆ†æ•°ï¼šâ€å­—ç¬¦ä¸²åªèƒ½æ˜¯TCHARæ‰èƒ½æ˜¾ç¤ºåœ¨ç”»é¢ä¸Š
+	nodeNum = 0, getScore = 0;																				 //åˆå§‹åŒ–èŠ‚ç‚¹æ•°ï¼Œæ‰€å¾—åˆ†æ•°
+	memset(nodes, 0, sizeof(Node) * 10000);                                                                  //æ¸…ç©ºèŠ‚ç‚¹ä¿¡æ¯
+	srand(time(NULL));                                                                                       //æ—¶é—´ç§å­ï¼Œéšæœºæ•°ç”¨
+	//åˆå§‹åŒ–èƒŒæ™¯
+	loadimage(NULL, _T("F:\\VS_test\\Cç¨‹åºè®¾è®¡å®éªŒ\\xk.jpg"));
 
-	//³õÊ¼»¯ÓÒ²¿·ÖµÃ·ÖÇé¿ö
+	//åˆå§‹åŒ–å³éƒ¨åˆ†å¾—åˆ†æƒ…å†µ
 	LOGFONT f;
-	settextcolor(RGB(255, 106, 106));                                              //ÉèÖÃ×ÖÌåÑÕÉ«ÎªRGBÑÕÉ«
+	settextcolor(RGB(255, 106, 106));                                              //è®¾ç½®å­—ä½“é¢œè‰²ä¸ºRGBé¢œè‰²
 	gettextstyle(&f);
 	f.lfHeight = 48;
-	_tcscpy_s(f.lfFaceName, _T("ËÎÌå"));
+	_tcscpy_s(f.lfFaceName, _T("å®‹ä½“"));
 	f.lfQuality = ANTIALIASED_QUALITY;
-	settextstyle(&f);                                                 //ÉèÖÃ¿¹¾â³İĞ§¹û
-	setbkmode(TRANSPARENT);                                           //ÉèÖÃ±³¾°Í¸Ã÷
-	outtextxy(450, 20, s);                                            //ÔÚ(500, 20)Êä³ö¡°·ÖÊı¡±
-	outtextxy(490, 80, _T("0"));                                      //³õÊ¼·ÖÊıÎª0
+	settextstyle(&f);                                                 //è®¾ç½®æŠ—é”¯é½¿æ•ˆæœ
+	setbkmode(TRANSPARENT);                                           //è®¾ç½®èƒŒæ™¯é€æ˜
+	outtextxy(450, 20, s);                                            //åœ¨(500, 20)è¾“å‡ºâ€œåˆ†æ•°â€
+	outtextxy(490, 80, _T("0"));                                      //åˆå§‹åˆ†æ•°ä¸º0
 
-	//³õÊ¼»¯·½¿é£¬ÓÉÓÚ·½¿éÑÕÉ«ÔÚ½á¹¹ÌåÖĞ0-15£¬i£¬j·Ö±ğ´Ó0¿ªÊ¼£¬ÔòÒÔ£¨i+1£©*£¨j+1£©±íÊ¾
-	//ÓÖ·Ç1-16£¬Ôò¼õÈ¥1
+	//åˆå§‹åŒ–æ–¹å—ï¼Œç”±äºæ–¹å—é¢œè‰²åœ¨ç»“æ„ä½“ä¸­0-15ï¼Œiï¼Œjåˆ†åˆ«ä»0å¼€å§‹ï¼Œåˆ™ä»¥ï¼ˆi+1ï¼‰*ï¼ˆj+1ï¼‰è¡¨ç¤º
+	//åˆé1-16ï¼Œåˆ™å‡å»1
 	for (i = 0; i < 4; i++)
 	{
 		for (j = 0; j < 4; j++)
@@ -105,7 +129,7 @@ void initAll()
 		}
 	}
 
-	//³õÊ¼»¯2¸ö2»ò4µÄ·½¿é£¬ÎªÁËÈÃÊı×ÖÏÔÊ¾ÔÚ·½¿éÖĞ¼ä£¬firstLocX£¬firstLocYÒª*100+40»ò30
+	//åˆå§‹åŒ–2ä¸ª2æˆ–4çš„æ–¹å—ï¼Œä¸ºäº†è®©æ•°å­—æ˜¾ç¤ºåœ¨æ–¹å—ä¸­é—´ï¼ŒfirstLocXï¼ŒfirstLocYè¦*100+40æˆ–30
 	while(nodeNum != 2)
 	{
 		firstNum = rand() % 2;
@@ -116,14 +140,14 @@ void initAll()
 
 		if (nodeNum == 1)
 		{
-			if (firstLocX == nodes[0].x * 100 + 40 && firstLocY == nodes[0].y * 100 + 30)               //²úÉúµÚ¶ş¸öËæ»ú·½¿éÊ±£¬ÒªÅĞ¶Ï²»ÄÜ³öÏÖÔÚµÚÒ»¸ö·½¿éµÄÎ»ÖÃ
+			if (firstLocX == nodes[0].x * 100 + 40 && firstLocY == nodes[0].y * 100 + 30)               //äº§ç”Ÿç¬¬äºŒä¸ªéšæœºæ–¹å—æ—¶ï¼Œè¦åˆ¤æ–­ä¸èƒ½å‡ºç°åœ¨ç¬¬ä¸€ä¸ªæ–¹å—çš„ä½ç½®
 				continue;
 		}
 		nodes[nodeNum].x = (firstLocX - 40) / 100;
 		nodes[nodeNum].y = (firstLocY - 30) / 100;
 		setbkmode(TRANSPARENT);
-		_tcscpy_s(f.lfFaceName, _T("ËÎÌå"));
-		if (firstNum == 0)                                                                              //firstNumÊÇ0±íÊ¾Êı×Ö2£¬ÊÇ1±íÊ¾Êı×Ö4£¬³õ´Î²úÉúÖ»ÓĞ2ºÍ4
+		_tcscpy_s(f.lfFaceName, _T("å®‹ä½“"));
+		if (firstNum == 0)                                                                              //firstNumæ˜¯0è¡¨ç¤ºæ•°å­—2ï¼Œæ˜¯1è¡¨ç¤ºæ•°å­—4ï¼Œåˆæ¬¡äº§ç”Ÿåªæœ‰2å’Œ4
 		{
 			settextcolor(RGB(cColor[0].r, cColor[0].g, cColor[0].b));
 			outtextxy(firstLocX, firstLocY, _T("2"));
@@ -137,83 +161,90 @@ void initAll()
 		}
 	}
 
-	//ÖØĞÂ¿ªÊ¼°´Å¥
-	settextstyle(36, 0, _T("Á¥Êé"));
-	outtextxy(450, 350, _T("ÖØĞÂ¿ªÊ¼"));
+	//é‡æ–°å¼€å§‹æŒ‰é’®
+	settextstyle(36, 0, _T("éš¶ä¹¦"));
+	outtextxy(450, 350, _T("é‡æ–°å¼€å§‹"));
+
+	//å­˜æ¡£æŒ‰é’®
+	settextstyle(36, 0, _T("éš¶ä¹¦"));
+	outtextxy(480, 300, _T("å­˜æ¡£"));
 }
-//¿ªÊ¼½çÃæ
+//å¼€å§‹ç•Œé¢
 void firstGraph()
 {
-	//µÈ´ı¿ªÊ¼
+	//ç­‰å¾…å¼€å§‹
 	LOGFONT f;
-	RECT r = { 150, 300, 600, 400 };                                                                        //¶¨ÒådrawtextµÄÖ¸¶¨ÇøÓò
-	loadimage(NULL, _T("F:\\VS_test\\C³ÌĞòÉè¼ÆÊµÑé\\mt.jpg"));
-	setbkmode(TRANSPARENT);                                                                                 //ÉèÖÃÎÄ×ÖÒÔÍ¸Ã÷É«ÏÔÊ¾
-	settextcolor(BLACK);                                                                                    //ÉèÖÃ×ÖÌåÎªºÚÉ«
+	RECT r = { 150, 300, 600, 400 };                                                                        //å®šä¹‰drawtextçš„æŒ‡å®šåŒºåŸŸ
+	loadimage(NULL, _T("F:\\VS_test\\Cç¨‹åºè®¾è®¡å®éªŒ\\mt.jpg"));
+	setbkmode(TRANSPARENT);                                                                                 //è®¾ç½®æ–‡å­—ä»¥é€æ˜è‰²æ˜¾ç¤º
+	settextcolor(BLACK);                                                                                    //è®¾ç½®å­—ä½“ä¸ºé»‘è‰²
 	gettextstyle(&f);
 	f.lfHeight = 60;
-	_tcscpy_s(f.lfFaceName, _T("Á¥Êé"));
+	_tcscpy_s(f.lfFaceName, _T("éš¶ä¹¦"));
 	f.lfQuality = ANTIALIASED_QUALITY;
-	settextstyle(&f);                                                                                       //ÉèÖÃ¿¹¾â³İĞ§¹û
-	outtextxy(235, 120, _T("2048"));                                                                        //ÓÎÏ·Ãû
-	outtextxy(140, 200, _T("¿ªÊ¼  ÍË³ö"));                                                                  //¿ªÊ¼ÓÎÏ·ºÍÍË³öÓÎÏ·°´Å¥
-	settextstyle(20, 0, _T("Á¥Êé"));                                                                        //¸ü¸ÄÓÎÏ·¹æÔò×ÖÌå´óĞ¡
-	drawtext(_T("¹æÔò£ºÓÃ¼üÅÌ½øĞĞÉÏÏÂ×óÓÒ²Ù×÷\n¿ØÖÆ·½¿é×óÒÆÓÒÒÆÖ±µ½ºÏ³É2048"), &r, DT_WORDBREAK);           //ÔÚÖ¸¶¨ÇøÓòÒÔ×Ô¶¯»»ĞĞ¸ñÊ½ÏÔÊ¾¹æÔò
-	memset(nodes, 0, sizeof(Node) * 10000);                                                                 //¿ªÊ¼Ç°Çå¿Õ½ÚµãĞÅÏ¢
+	settextstyle(&f);                                                                                       //è®¾ç½®æŠ—é”¯é½¿æ•ˆæœ
+	outtextxy(235, 120, _T("2048"));                                                                        //æ¸¸æˆå
+	outtextxy(140, 200, _T("å¼€å§‹  é€€å‡º"));                                                                  //å¼€å§‹æ¸¸æˆå’Œé€€å‡ºæ¸¸æˆæŒ‰é’®
+	settextstyle(20, 0, _T("éš¶ä¹¦"));                                                                        //æ›´æ”¹æ¸¸æˆè§„åˆ™å­—ä½“å¤§å°
+	drawtext(_T("è§„åˆ™ï¼šç”¨é”®ç›˜è¿›è¡Œä¸Šä¸‹å·¦å³æ“ä½œ\næ§åˆ¶æ–¹å—å·¦ç§»å³ç§»ç›´åˆ°åˆæˆ2048"), &r, DT_WORDBREAK);           //åœ¨æŒ‡å®šåŒºåŸŸä»¥è‡ªåŠ¨æ¢è¡Œæ ¼å¼æ˜¾ç¤ºè§„åˆ™
+	memset(nodes, 0, sizeof(Node) * 10000);                                                                 //å¼€å§‹å‰æ¸…ç©ºèŠ‚ç‚¹ä¿¡æ¯
 
-	setbkmode(TRANSPARENT);                                                                                 //¿ª·¢ÕßĞÅÏ¢
-	outtextxy(450, 380, _T("¿ª·¢Õß£ºÇØ¿­öÎ"));
+	setbkmode(TRANSPARENT);                                                                                 //å¼€å‘è€…ä¿¡æ¯
+	outtextxy(450, 380, _T("å¼€å‘è€…ï¼šç§¦å‡¯é‘«"));
+	
+	settextstyle(40, 0, _T("éš¶ä¹¦"));                                                                        //è®¾ç½®è¯»æ¡£æŒ‰é’®
+	outtextxy(500, 0, _T("è¯»æ¡£"));
 }
-//ÖØĞÂ¿ªÊ¼
+//é‡æ–°å¼€å§‹
 void reStart()
 {
 	MOUSEMSG m;
-	TCHAR sscore[10];                                                                           //½«·ÖÊıint×ª»»ÎªTCHAR
+	TCHAR sscore[10];                                                                           //å°†åˆ†æ•°intè½¬æ¢ä¸ºTCHAR
 	setfillcolor(RGB(238, 130, 238)); 
-	fillrectangle(190, 200, 410, 250);                                                          //ÖØĞÂ¿ªÊ¼°´Å¥µÄ¾ØĞÎ
+	fillrectangle(190, 200, 410, 250);                                                          //é‡æ–°å¼€å§‹æŒ‰é’®çš„çŸ©å½¢
 	
 	setbkmode(TRANSPARENT);
 	settextcolor(RGB(72, 118, 255));
-	settextstyle(48, 0, _T("Á¥Êé"));
-	outtextxy(200, 200, _T("ÖØĞÂ¿ªÊ¼"));                                                        //»æÖÆÖØĞÂ¿ªÊ¼°´Å¥
+	settextstyle(48, 0, _T("éš¶ä¹¦"));
+	outtextxy(200, 200, _T("é‡æ–°å¼€å§‹"));                                                        //ç»˜åˆ¶é‡æ–°å¼€å§‹æŒ‰é’®
 
 	setbkmode(TRANSPARENT);
 	settextcolor(RGB(72, 118, 255));
-	outtextxy(210, 260, _T("·ÖÊı£º"));
-	_stprintf_s(sscore, _T("%d"), getScore);                                                     //½«·ÖÊı×ª»»ÎªTCHARĞÍ
-	outtextxy(330, 260, sscore);                                                                 //ÏÔÊ¾µÃ·Ö
+	outtextxy(210, 260, _T("åˆ†æ•°ï¼š"));
+	_stprintf_s(sscore, _T("%d"), getScore);                                                     //å°†åˆ†æ•°è½¬æ¢ä¸ºTCHARå‹
+	outtextxy(330, 260, sscore);                                                                 //æ˜¾ç¤ºå¾—åˆ†
 
 	while (1)
 	{
-		m = GetMouseMsg();                                                                       //¶ÁÈ¡Êó±êĞÅÏ¢
-		if (m.uMsg == WM_LBUTTONDOWN && m.x >= 190 && m.x <= 430 && m.y >= 200 && m.y <= 250)    //¶Áµ½Êó±êĞÅÏ¢Îª×ó¼üµã»÷¡°ÖØĞÂ¿ªÊ¼¡±°´Å¥
+		m = GetMouseMsg();                                                                       //è¯»å–é¼ æ ‡ä¿¡æ¯
+		if (m.uMsg == WM_LBUTTONDOWN && m.x >= 190 && m.x <= 430 && m.y >= 200 && m.y <= 250)    //è¯»åˆ°é¼ æ ‡ä¿¡æ¯ä¸ºå·¦é”®ç‚¹å‡»â€œé‡æ–°å¼€å§‹â€æŒ‰é’®
 		{
-			firstGraph();                                                                        //ÔÙ´Î»Øµ½Ê×½çÃæ
-			break;                                                                               //½áÊøÑ­»·£¬»Øµ½ÉÏÒ»²ã
+			firstGraph();                                                                        //å†æ¬¡å›åˆ°é¦–ç•Œé¢
+			break;                                                                               //ç»“æŸå¾ªç¯ï¼Œå›åˆ°ä¸Šä¸€å±‚
 		}
 	}
 }
-//ÒÆ¶¯µã£¬Ê¤Àû»òÊ§°Ü·µ»Ø0£¬·ñÔò·µ»Ø1
+//ç§»åŠ¨ç‚¹ï¼Œèƒœåˆ©æˆ–å¤±è´¥è¿”å›0ï¼Œå¦åˆ™è¿”å›1
 int moveNode()
 {
 	char ch;
-	while (_kbhit())                                                                       //³ÖĞøµÃµ½¼üÅÌĞÅÏ¢
+	while (_kbhit())                                                                       //æŒç»­å¾—åˆ°é”®ç›˜ä¿¡æ¯
 	{
 		ch = _getch();
-		if (checkWin())                                                                     //ÌØÅĞÊ¤ÀûÌõ¼ş
+		if (checkWin())                                                                     //ç‰¹åˆ¤èƒœåˆ©æ¡ä»¶
 		{
-			reStart();                                                                      //³öÏÖÖØĞÂ¿ªÊ¼°´Å¥²¢¿ÉÑ¡Ôñ·µ»ØÊ×½çÃæ
-			return 0;                                                                       //·µ»Ø
+			reStart();                                                                      //å‡ºç°é‡æ–°å¼€å§‹æŒ‰é’®å¹¶å¯é€‰æ‹©è¿”å›é¦–ç•Œé¢
+			return 0;                                                                       //è¿”å›
 		}
-		if (ch == 'a')                                                                      //¼üÅÌ×ó¼ıÍ·
+		if (ch == 'a')                                                                      //é”®ç›˜å·¦ç®­å¤´
 		{
-			if (!moveToLeft())                                                              //×óÒÆÊ§°Ü£¬ÓÎÏ·½áÊø
+			if (!moveToLeft())                                                              //å·¦ç§»å¤±è´¥ï¼Œæ¸¸æˆç»“æŸ
 			{
-				reStart();                                                                  //³öÏÖÖØĞÂ¿ªÊ¼°´Å¥²¢¿ÉÑ¡Ôñ·µ»ØÊ×½çÃæ
-				return 0;																	//·µ»Ø
+				reStart();                                                                  //å‡ºç°é‡æ–°å¼€å§‹æŒ‰é’®å¹¶å¯é€‰æ‹©è¿”å›é¦–ç•Œé¢
+				return 0;																	//è¿”å›
 			}
 		}
-		if (ch == 'd')                                                                      //¼üÅÌÓÒ¼ıÍ·
+		if (ch == 'd')                                                                      //é”®ç›˜å³ç®­å¤´
 		{
 			if (!moveToRight())
 			{
@@ -221,7 +252,7 @@ int moveNode()
 				return 0;
 			}
 		}
-		if (ch == 'w')                                                                       //¼üÅÌÉÏ¼ıÍ·
+		if (ch == 'w')                                                                       //é”®ç›˜ä¸Šç®­å¤´
 		{
 			if (!moveToUp())
 			{
@@ -229,7 +260,7 @@ int moveNode()
 				return 0;
 			}
 		}
-		if (ch == 's')                                                                       //¼üÅÌÏÂ¼ıÍ·
+		if (ch == 's')                                                                       //é”®ç›˜ä¸‹ç®­å¤´
 		{
 			if (!moveToDown())
 			{
@@ -238,32 +269,32 @@ int moveNode()
 			}
 		}
 	}
-	return 1;																				 //Î´Ê§°Ü»ò³É¹¦£¬·µ»Ø1
+	return 1;																				 //æœªå¤±è´¥æˆ–æˆåŠŸï¼Œè¿”å›1
 }
-//Ã¿´ÎÒÆ¶¯ÖØĞÂ»­Í¼
+//æ¯æ¬¡ç§»åŠ¨é‡æ–°ç”»å›¾
 void redraw()
 {
 	int i, j;
-	TCHAR squareNum[10];                                                    //½«·½¿éÖĞÊı×Ö×ª×Ö·û
+	TCHAR squareNum[10];                                                    //å°†æ–¹å—ä¸­æ•°å­—è½¬å­—ç¬¦
 	//char str[10];
-	TCHAR s[6] = _T("·ÖÊı:");
-	//»æÖÆ
-	loadimage(NULL, _T("F:\\VS_test\\C³ÌĞòÉè¼ÆÊµÑé\\xk.jpg"));
+	TCHAR s[6] = _T("åˆ†æ•°:");
+	//ç»˜åˆ¶
+	loadimage(NULL, _T("F:\\VS_test\\Cç¨‹åºè®¾è®¡å®éªŒ\\xk.jpg"));
 
-	//¸üĞÂµÃ·Ö
+	//æ›´æ–°å¾—åˆ†
 	LOGFONT f;
-	settextcolor(RGB(255, 106, 106));                                       //ÉèÖÃ×ÖÌåÑÕÉ«ÎªRGBÑÕÉ«
+	settextcolor(RGB(255, 106, 106));                                       //è®¾ç½®å­—ä½“é¢œè‰²ä¸ºRGBé¢œè‰²
 	gettextstyle(&f);
 	f.lfHeight = 48;
-	_tcscpy_s(f.lfFaceName, _T("ËÎÌå"));
+	_tcscpy_s(f.lfFaceName, _T("å®‹ä½“"));
 	f.lfQuality = ANTIALIASED_QUALITY;
-	settextstyle(&f);                                                       //ÉèÖÃ¿¹¾â³İĞ§¹û
+	settextstyle(&f);                                                       //è®¾ç½®æŠ—é”¯é½¿æ•ˆæœ
 	setbkmode(TRANSPARENT);  
-	outtextxy(450, 20, s);                                                  //ÔÚ(500, 20)Êä³ö¡°·ÖÊı¡±
-	_stprintf_s(squareNum, _T("%d"), getScore);                             //½«·ÖÊı×ªÎªTCHAR
-	outtextxy(490, 80, squareNum);                                          //Êä³öÒÑµÃ·ÖÊı
+	outtextxy(450, 20, s);                                                  //åœ¨(500, 20)è¾“å‡ºâ€œåˆ†æ•°â€
+	_stprintf_s(squareNum, _T("%d"), getScore);                             //å°†åˆ†æ•°è½¬ä¸ºTCHAR
+	outtextxy(490, 80, squareNum);                                          //è¾“å‡ºå·²å¾—åˆ†æ•°
 
-	//³õÊ¼»¯·½¿é£¬Í¬ÉÏ
+	//åˆå§‹åŒ–æ–¹å—ï¼ŒåŒä¸Š
 	for (i = 0; i < 4; i++)
 	{
 		for (j = 0; j < 4; j++)
@@ -280,10 +311,15 @@ void redraw()
 			}
 		}
 	}
-	//ÖØĞÂ¿ªÊ¼°´Å¥
-	settextstyle(36, 0, _T("Á¥Êé"));
-	outtextxy(450, 350, _T("ÖØĞÂ¿ªÊ¼"));
-	//¶ÔÓÚÃ¿¸ö½Úµã£¬ÅĞ¶ÏÆänum²»Îª0Ê±£¬Êä³ö£¬ÓÉÖµÈ·¶¨ÑÕÉ«£¬2-2048ÇólogºóÊÇ1-11£¬Òò´Ë¶ÔÓ¦11ÖÖÑÕÉ«
+	//é‡æ–°å¼€å§‹æŒ‰é’®
+	settextstyle(36, 0, _T("éš¶ä¹¦"));
+	outtextxy(450, 350, _T("é‡æ–°å¼€å§‹"));
+
+	//å­˜æ¡£æŒ‰é’®
+	settextstyle(36, 0, _T("éš¶ä¹¦"));
+	outtextxy(480, 300, _T("å­˜æ¡£"));
+
+	//å¯¹äºæ¯ä¸ªèŠ‚ç‚¹ï¼Œåˆ¤æ–­å…¶numä¸ä¸º0æ—¶ï¼Œè¾“å‡ºï¼Œç”±å€¼ç¡®å®šé¢œè‰²ï¼Œ2-2048æ±‚logåæ˜¯1-11ï¼Œå› æ­¤å¯¹åº”11ç§é¢œè‰²
 	for (i = 0; i < nodeNum; i++)
 	{
 		if (nodes[i].num == 0)
@@ -293,19 +329,19 @@ void redraw()
 		outtextxy(nodes[i].x * 100 + 40, nodes[i].y * 100 + 30, squareNum);
 	}
 }
-//²úÉúĞÂµÄµã
-void proNode()                                                                         //²úÉúĞÂµÄ·½¿é
+//äº§ç”Ÿæ–°çš„ç‚¹
+void proNode()                                                                         //äº§ç”Ÿæ–°çš„æ–¹å—
 {
-	int newX, newY, newNum, i, isExist = 0;                                            //newX newY±íÊ¾Ëæ»úÉú³ÉµãµÄ×ø±ê£¬newNum±íÊ¾ĞÂµÄÊı×Ö0£¬1£¬2±íÊ¾2£¬4£¬8
-	while (1)                                                                          //isExistÎªÅĞ¶Ï´ËÎ»ÖÃÊÇ·ñÒÑ´æÔÚµã
+	int newX, newY, newNum, i, isExist = 0;                                            //newX newYè¡¨ç¤ºéšæœºç”Ÿæˆç‚¹çš„åæ ‡ï¼ŒnewNumè¡¨ç¤ºæ–°çš„æ•°å­—0ï¼Œ1ï¼Œ2è¡¨ç¤º2ï¼Œ4ï¼Œ8
+	while (1)                                                                          //isExistä¸ºåˆ¤æ–­æ­¤ä½ç½®æ˜¯å¦å·²å­˜åœ¨ç‚¹
 	{
 		isExist = 0;
 		newX = rand() % 4;
 		newY = rand() % 4;
 		newNum = rand() % 3;
-		for (i = 0; i < nodeNum; i++)                                                   //ÅĞ¶Ï²úÉúµÄ·½¿éÎ»ÖÃÊÇ·ñ´æÔÚ·½¿é
+		for (i = 0; i < nodeNum; i++)                                                   //åˆ¤æ–­äº§ç”Ÿçš„æ–¹å—ä½ç½®æ˜¯å¦å­˜åœ¨æ–¹å—
 		{
-			if (newX == nodes[i].x && newY == nodes[i].y && nodes[i].num != 0)          //Òª¼Ónodes[i].num£¡=0±íÊ¾´ËÎ»ÖÃÓĞµã
+			if (newX == nodes[i].x && newY == nodes[i].y && nodes[i].num != 0)          //è¦åŠ nodes[i].numï¼=0è¡¨ç¤ºæ­¤ä½ç½®æœ‰ç‚¹
 			{
 				isExist = 1;
 				break;
@@ -330,66 +366,66 @@ void proNode()                                                                  
 		return;
 	}
 }
-//¼ì²éÊÇ·ñÂú16¸öÇÒÎ´´ïµ½2048
+//æ£€æŸ¥æ˜¯å¦æ»¡16ä¸ªä¸”æœªè¾¾åˆ°2048
 int check()
 {
 	int i;
-	int exsitSquare = 0;                                                                      //ÊÇ·ñ´æÔÚ·½¿é
-	for (i = 0; i < nodeNum; i++)                                                             //¶ÔÒÑÖªÃ¿¸öµã½øĞĞ¼ì²é
+	int exsitSquare = 0;                                                                      //æ˜¯å¦å­˜åœ¨æ–¹å—
+	for (i = 0; i < nodeNum; i++)                                                             //å¯¹å·²çŸ¥æ¯ä¸ªç‚¹è¿›è¡Œæ£€æŸ¥
 	{	
-		if (nodes[i].num != 0)                                                                //ÆäÖĞ´æÔÚx=y=num=0µÄÎŞÒâÒåµã
+		if (nodes[i].num != 0)                                                                //å…¶ä¸­å­˜åœ¨x=y=num=0çš„æ— æ„ä¹‰ç‚¹
 			exsitSquare++;
-		if (exsitSquare == 16)                                                                //ÒÑ¾­ÓĞ16¸ö·½¿é
+		if (exsitSquare == 16)                                                                //å·²ç»æœ‰16ä¸ªæ–¹å—
 		{
-			initgraph(600, 400);                                                              //³õÊ¼»¯±³¾°
-			setbkcolor(WHITE);                                                                //µ×É«Îª°×É«
+			initgraph(600, 400);                                                              //åˆå§‹åŒ–èƒŒæ™¯
+			setbkcolor(WHITE);                                                                //åº•è‰²ä¸ºç™½è‰²
 			cleardevice();                                                    
-			loadimage(NULL, _T("F:\\VS_test\\C³ÌĞòÉè¼ÆÊµÑé\\animal1.jpg"));                   //¼ÓÔØÊ§°ÜÍ¼Æ¬±íÇé
+			loadimage(NULL, _T("F:\\VS_test\\Cç¨‹åºè®¾è®¡å®éªŒ\\animal1.jpg"));                   //åŠ è½½å¤±è´¥å›¾ç‰‡è¡¨æƒ…
 			
 			setbkmode(TRANSPARENT);                                        
 			settextcolor(RGB(25, 25, 112));
-			settextstyle(48, 0, _T("Á¥Êé"));
-			outtextxy(250, 120, _T("Ê§°Ü£¡"));                                                 //Ê§°Ü×ÖÌåÏÔÊ¾
-			return 0;                                                                          //Ê§°Ü·µ»Ø0£¬Î´Ê§°Ü·µ»Ø1
+			settextstyle(48, 0, _T("éš¶ä¹¦"));
+			outtextxy(250, 120, _T("å¤±è´¥ï¼"));                                                 //å¤±è´¥å­—ä½“æ˜¾ç¤º
+			return 0;                                                                          //å¤±è´¥è¿”å›0ï¼Œæœªå¤±è´¥è¿”å›1
 		}
 	}
 	return 1;
 }
-//Ïò×ó
+//å‘å·¦
 int moveToLeft()
 {
-	int i, j, hNode;                                                                                                   //hNode±íÊ¾haveNode£¬ÒªÒÆ¶¯Î»ÖÃÊÇ·ñÓĞ·½¿é
-	if (!check())                                                                                                      //check£¨£©Îª0£¬16¸ö¸ñ×ÓÒÑÂú
+	int i, j, hNode;                                                                                                   //hNodeè¡¨ç¤ºhaveNodeï¼Œè¦ç§»åŠ¨ä½ç½®æ˜¯å¦æœ‰æ–¹å—
+	if (!check())                                                                                                      //checkï¼ˆï¼‰ä¸º0ï¼Œ16ä¸ªæ ¼å­å·²æ»¡
 		return 0;
-	for (i = 0; i < nodeNum; i++)                                                                                      //Î´ÂúÊ±£¬¼ì²éÃ¿¸ö·½¿éÊÇ·ñÄÜÒÆ¶¯
+	for (i = 0; i < nodeNum; i++)                                                                                      //æœªæ»¡æ—¶ï¼Œæ£€æŸ¥æ¯ä¸ªæ–¹å—æ˜¯å¦èƒ½ç§»åŠ¨
 	{
-		hNode = 0;                                                                                                     //³õÊ¼»¯
-		if (nodes[i].x > 0)                                                                                            //Î»ÓÚ×ó±ß½çx=0´¦µÄ¸ñ×Ó²»ÒÆ¶¯£¬ÒªÇóx>0
+		hNode = 0;                                                                                                     //åˆå§‹åŒ–
+		if (nodes[i].x > 0)                                                                                            //ä½äºå·¦è¾¹ç•Œx=0å¤„çš„æ ¼å­ä¸ç§»åŠ¨ï¼Œè¦æ±‚x>0
 		{
 			for (j = 0; j < nodeNum; j++)                                                                         
 			{
 				if (j == i)
 					continue;
-				if (nodes[i].x == nodes[j].x + 1 && nodes[i].y == nodes[j].y && nodes[i].num == nodes[j].num)           //ÒÆ¶¯Ä¿±êÎ»ÖÃÓĞÏàÍ¬·½¿é
+				if (nodes[i].x == nodes[j].x + 1 && nodes[i].y == nodes[j].y && nodes[i].num == nodes[j].num)           //ç§»åŠ¨ç›®æ ‡ä½ç½®æœ‰ç›¸åŒæ–¹å—
 				{
-					nodes[j].num *= 2;                                                                                  //Ä¿±êÎ»ÖÃ·½¿éÖµ*2
-					nodes[i].x = nodes[i].y = nodes[i].num = 0;                                                         //±»ÒÆ¶¯½ÚµãÇå¿Õ
-					hNode = 1;                                                                                          //´òÉÏÒÑÓĞ·½¿é±ê¼Ç
-					getScore++;                                                                                         //µÃ·Ö
+					nodes[j].num *= 2;                                                                                  //ç›®æ ‡ä½ç½®æ–¹å—å€¼*2
+					nodes[i].x = nodes[i].y = nodes[i].num = 0;                                                         //è¢«ç§»åŠ¨èŠ‚ç‚¹æ¸…ç©º
+					hNode = 1;                                                                                          //æ‰“ä¸Šå·²æœ‰æ–¹å—æ ‡è®°
+					getScore++;                                                                                         //å¾—åˆ†
 					break;
 				}
-				else if (nodes[i].x == nodes[j].x + 1 && nodes[i].y == nodes[j].y && nodes[i].num != nodes[j].num)      //ÒÆ¶¯Ä¿±êÎ»ÖÃÓĞ²»Í¬Öµ·½¿é
-					hNode = 1;                                                                                          //´ò±ê¼Çµ«²»¶¯·½¿é
+				else if (nodes[i].x == nodes[j].x + 1 && nodes[i].y == nodes[j].y && nodes[i].num != nodes[j].num)      //ç§»åŠ¨ç›®æ ‡ä½ç½®æœ‰ä¸åŒå€¼æ–¹å—
+					hNode = 1;                                                                                          //æ‰“æ ‡è®°ä½†ä¸åŠ¨æ–¹å—
 			}
 			if (!hNode)
-				nodes[i].x--;                                                                                           //Ä¿±êÎ»ÖÃ²»´æÔÚ·½¿é£¬ÒÆ¶¯
+				nodes[i].x--;                                                                                           //ç›®æ ‡ä½ç½®ä¸å­˜åœ¨æ–¹å—ï¼Œç§»åŠ¨
 		}
 	}
-	proNode();                                                                                                          //Ã¿´ÎÒÆ¶¯ºó²úÉúĞÂµÄ·½¿é
-	redraw();                                                                                                           //ÖØĞÂ»­Í¼
-	return 1;                                                                                                           //³É¹¦ÒÆ¶¯
+	proNode();                                                                                                          //æ¯æ¬¡ç§»åŠ¨åäº§ç”Ÿæ–°çš„æ–¹å—
+	redraw();                                                                                                           //é‡æ–°ç”»å›¾
+	return 1;                                                                                                           //æˆåŠŸç§»åŠ¨
 }
-//ÏòÓÒ
+//å‘å³
 int moveToRight()
 {
 	int i, j, hNode;
@@ -423,7 +459,7 @@ int moveToRight()
 	redraw();
 	return 1;
 }
-//ÏòÉÏ
+//å‘ä¸Š
 int moveToUp()
 {
 	int i, j, hNode;
@@ -457,7 +493,7 @@ int moveToUp()
 	redraw();
 	return 1;
 }
-//ÏòÏÂ
+//å‘ä¸‹
 int moveToDown()
 {
 	int i, j, hNode;
@@ -491,49 +527,216 @@ int moveToDown()
 	redraw();
 	return 1;
 }
-//¼ì²éÊÇ·ñ´ïµ½2048
+//æ£€æŸ¥æ˜¯å¦è¾¾åˆ°2048
 int checkWin()
 {
 	int i;
-	IMAGE img1, img2;                                                                               //ÎªĞı×ªÊ¤ÀûÍ¼Æ¬¶øÉè
+	IMAGE img1, img2;                                                                               //ä¸ºæ—‹è½¬èƒœåˆ©å›¾ç‰‡è€Œè®¾
 	for (i = 0; i < nodeNum; i++)
 	{
-		if (nodes[i].num == 2048)                                                                   //´æÔÚÒ»¸öµãµÄÖµ´ïµ½2048
+		if (nodes[i].num == 2048)                                                                   //å­˜åœ¨ä¸€ä¸ªç‚¹çš„å€¼è¾¾åˆ°2048
 		{
-			initgraph(600, 400);                                                                    //ÏÔÊ¾Ê¤ÀûÍ¼Æ¬±³¾°
+			initgraph(600, 400);                                                                    //æ˜¾ç¤ºèƒœåˆ©å›¾ç‰‡èƒŒæ™¯
 			setbkcolor(WHITE);
 			cleardevice();
-			loadimage(&img1, _T("F:\\VS_test\\C³ÌĞòÉè¼ÆÊµÑé\\Ê¤Àû.jpg"));
+			loadimage(&img1, _T("F:\\VS_test\\Cç¨‹åºè®¾è®¡å®éªŒ\\èƒœåˆ©.jpg"));
 			rotateimage(&img2, &img1, PI / 4);
 			putimage(0, 0, &img2);
 
 
-			setbkmode(TRANSPARENT);                                                                  //ÏÔÊ¾Ê¤Àû×ÖÑù
+			setbkmode(TRANSPARENT);                                                                  //æ˜¾ç¤ºèƒœåˆ©å­—æ ·
 			settextcolor(RGB(255, 69, 0));
-			settextstyle(48, 0, _T("ºÚÌå"));
-			outtextxy(250, 150, _T("³É¹¦£¡"));
-			return 1;                                                                                //·µ»ØÒÑ³É¹¦
+			settextstyle(48, 0, _T("é»‘ä½“"));
+			outtextxy(250, 150, _T("æˆåŠŸï¼"));
+			return 1;                                                                                //è¿”å›å·²æˆåŠŸ
 		}
 	}
-	return 0;                                                                                        //·µ»ØÈÔÎ´³É¹¦
+	return 0;                                                                                        //è¿”å›ä»æœªæˆåŠŸ
 }
-//¿ªÊ¼£¬¿ØÖÆÊµÏÖÊó±êµã»÷ÖØĞÂ¿ªÊ¼ºÍ¼üÅÌ²Ù×÷ÒÆ¶¯
+//å¼€å§‹ï¼Œæ§åˆ¶å®ç°é¼ æ ‡ç‚¹å‡»é‡æ–°å¼€å§‹å’Œé”®ç›˜æ“ä½œç§»åŠ¨
 void start()
 {
 	MOUSEMSG m;
-	int flag;                                                                                                                   //Îª1±íÊ¾³É¹¦ÒÆ¶¯£¬Îª0±íÊ¾Ê¤Àû»òÕßÊ§°Ü
+	int flag;                                                                                                                   //ä¸º1è¡¨ç¤ºæˆåŠŸç§»åŠ¨ï¼Œä¸º0è¡¨ç¤ºèƒœåˆ©æˆ–è€…å¤±è´¥
 	while (1)
 	{
 		FlushMouseMsgBuffer();
 		m = GetMouseMsg();
 
-		if (m.uMsg == WM_LBUTTONDOWN && m.x >= 450 && m.x <= 600 && m.y >= 350 && m.y <= 400)                                   //Èç¹ûÖØĞÂ¿ªÊ¼£¬»æÖÆÖ÷½çÃæ²¢·µ»ØÖ÷º¯Êı
+		if (m.uMsg == WM_LBUTTONDOWN && m.x >= 450 && m.x <= 600 && m.y >= 350 && m.y <= 400)        //å¦‚æœé‡æ–°å¼€å§‹ï¼Œç»˜åˆ¶ä¸»ç•Œé¢å¹¶è¿”å›ä¸»å‡½æ•°
 		{
 			firstGraph();
 			return;
 		}
+		else if (m.uMsg == WM_LBUTTONDOWN && m.x >= 480 && m.x <= 550 && m.y >= 300 && m.y <= 350)   //å¦‚æœå­˜æ¡£ï¼Œå­˜å‚¨æ•°æ®å¹¶ç»˜åˆ¶ä¸»ç•Œé¢è¿”å›
+		{
+			if (!preserve())
+				continue;
+			firstGraph();
+			return ;
+		}
 		flag = moveNode();
-		if (!flag)                                                                                                              //ÓĞÖØĞÂ»æÖÆ£¬·µ»ØÖ÷º¯Êı
+		if (!flag)                                                                                   //æœ‰é‡æ–°ç»˜åˆ¶ï¼Œè¿”å›ä¸»å‡½æ•°
 			return;
 	}
+}
+//TCHARè½¬char
+void TcharToChar(const TCHAR* tchar, char* _char)
+{
+	int iLength;
+	//è·å–å­—èŠ‚é•¿åº¦   
+	iLength = WideCharToMultiByte(CP_ACP, 0, tchar, -1, NULL, 0, NULL, NULL);
+	//å°†tcharå€¼èµ‹ç»™_char    
+	WideCharToMultiByte(CP_ACP, 0, tchar, -1, _char, iLength, NULL, NULL);
+}
+//ç™»é™†
+int Login()
+{
+	memset(Identity1, 0, sizeof(Identity1));
+	memset(Identity, 0, sizeof(Identity));
+	if (!InputBox(Identity1, 16, _T("è¯·è¾“å…¥ID(IDä¸ºæ‰¾å›\næ•°æ®çš„å‡­è¯,æœ€å¤§15ä½æ•°)"), _T("ç™»é™†"), _T("è¯·è¾“å…¥ID"), 0, 0, false))
+		return 0;                                                                                                         //å¼¹çª—è¾“å…¥è´¦å·
+	TcharToChar(Identity1, Identity);                                                                                     //TCHARè½¬charç±»å‹       
+	return 1;
+}
+//åˆ é™¤æ¢è¡Œç¬¦
+void deleteN(char * s)
+{
+	int len;
+	len = strlen(s);
+	if (s[len - 1] == '\n')
+		s[len - 1] = '\0';
+}
+//ä»æ–‡æ¡£ä¸­å°†æ•°æ®æ‰¾å›
+void dataFind()
+{
+	FILE* f;
+	char datas[20];
+	char nums[10];
+	char getIdentity[20];
+	int len = 0, i, j, counts = 0, thisNode = 0;                                            //thisNodeæ ‡è®°å½“å‰ä¸ºç¬¬å‡ ä¸ªnode
+	nodeNum = 0, getScore = 0;
+	memset(nodes, 0, sizeof(nodes));                                                        //æ¸…ç©ºèŠ‚ç‚¹é›†ä»¥å¤‡ç”¨
+	memset(nums, 0, sizeof(nums));
+	f = fopen("data.txt", "r");                                                             //æ‰“å¼€æ–‡ä»¶data.txt
+	while (1)
+	{
+		fgets(getIdentity, sizeof(getIdentity), f);                                         //å°è¯•è¯»å–ä¸€ä¸ªID
+		deleteN(getIdentity);
+		if (!strcmp(getIdentity, Identity))                                                  //è¯»åˆ°åŒ¹é…çš„IDï¼Œå¼€å§‹æŠ“å–æ•°æ®
+		{
+			fgets(datas, sizeof(datas), f);                                                 //IDä¸‹ä¸€è¡Œä¸ºnodeNumå’ŒgetScoreï¼Œå•ç‹¬å¤„ç†
+			deleteN(datas);                                                                 //åˆ é™¤datasæ¢è¡Œç¬¦
+			len = strlen(datas), j = 0;
+			for (i = 0; i < len; i++)                                                       //å¯¹æ¯ä¸€ä¸ªå­—ç¬¦ä¸²å•ç‹¬å¤„ç†
+			{
+				if (datas[i] == ' ')                                                        //ç¢°åˆ°ä¸¤ä¸ªæ•°å­—ä¹‹é—´çš„é—´æ–­
+				{
+					nums[j++] = '\0';
+					nodeNum = atoi(nums);
+					memset(nums, 0, sizeof(nums));
+					j = 0;
+					continue;
+				}
+				nums[j++] = datas[i];                                                        //å¤åˆ¶å­—ç¬¦ä¸²
+			}
+			nums[j++] = '\0';
+			getScore = atoi(nums);                                                           //å°†ç¬¬äºŒä¸ªæ•°å­—èµ‹å€¼ç»™getScore
+			memset(nums, 0, sizeof(nums)), len = 0, j = 0;
+			while (strchr(datas, ' ') != NULL && fgets(datas, sizeof(datas), f) != NULL)     //è¯»å…¥nodes
+			{
+				len = strlen(datas); 
+				memset(nums, 0, sizeof(nums)), j = 0, counts = 0;
+				for (i = 0; i < len; i++)                                                    //å¯¹äºè¯»å…¥çš„ä¸€è¡Œ
+				{
+					if (datas[i] == ' ')                                                     //ç¢°åˆ°äº†ç©ºæ ¼
+					{
+						nums[j++] = '\0';                                                    //åŠ ç»ˆæ­¢ç¬¦ä»¥å½¢æˆå­—ç¬¦ä¸²
+						switch (counts)                                                      //countsä¸º0è¡¨ç¤ºç¬¬ä¸€ä¸ªæ•°å­—ï¼Œ1è¡¨ç¤ºç¬¬äºŒä¸ªæ•°å­—
+						{
+						case 0:
+							nodes[thisNode].x = atoi(nums);
+							break;
+						case 1:
+							nodes[thisNode].y = atoi(nums);
+							break;
+						}
+						counts++;                                                            //æ¯è®°è¿‡ä¸€ä¸ª+1
+						memset(nums, 0, sizeof(nums));
+						j = 0;
+						continue;
+					}
+					nums[j++] = datas[i];
+				}
+				nums[j++] = '\0';                                                            //ç»ˆæ­¢ånumså°‘äº†ä¸ª\0ï¼ŒåŠ ä¸Šåå½¢æˆå­—ç¬¦ä¸²
+				nodes[thisNode].num = atoi(nums);
+				thisNode++;                                                                  //nodeæ•°åŠ ä¸€
+			}
+			break;                                                                           //å¾—åˆ°äº†å­˜æ¡£ï¼Œå¾ªç¯ç»“æŸ
+		}
+	}
+}
+//å­˜æ¡£
+int preserve()
+{
+	char data[100], exNum[10];
+	char readName[20];
+	int len, i, flag = 0;
+	FILE* f;
+	f = fopen("data.txt", "a+");                                                             //ä»¥æ›´æ–°æ–¹å¼æ‰“å¼€æ–‡æœ¬
+
+	while (1)                                                                                //åˆ¤é‡
+	{
+		if (!InputBox(Identity1, 16, _T("è¯·è¾“å…¥æå–æ—¶çš„ID(IDä¸ºå”¯ä¸€å‡­è¯ï¼Œ\nè¯·å¦¥å–„ä¿ç®¡)"), _T("å­˜æ¡£"), _T("è¯·è¾“å…¥ID"), 0, 0, false))
+			return 0;
+		TcharToChar(Identity1, Identity);
+
+		flag = 0;
+		len = strlen(Identity);
+		Identity[len] = '\n';                                                                //åœ¨è¡Œæœ«åŠ æ¢è¡Œ
+		while (fgets(readName, sizeof(readName), f) != NULL)                                 //å¯¹æ–‡ä»¶è¿›è¡ŒæŒ‰è¡Œè¯»å–
+			if (!strcmp(Identity, readName))                                                 //å­˜åœ¨ç›¸åŒçš„IDå°±æ‰“ä¸Šæ ‡è®°
+			{
+				flag = 1;
+				break;
+			}
+		if (flag == 1)                                                                       //å­˜åœ¨ç›¸åŒIDå†æ¬¡å¼¹çª—è¾“å…¥
+			continue;
+		else
+		{
+			fputs(Identity, f);                                                              //å­˜å‚¨ID
+			break;
+		}
+	}
+	_itoa(nodeNum, data, 10);                                                                //nodeNumè½¬å­—ç¬¦åå†™å…¥
+	fputs(data, f);
+	fputs(" ", f);
+	memset(data, 0, sizeof(data));
+	_itoa(getScore, data, 10);                                                               //getScoreè½¬å­—ç¬¦åå†™å…¥
+	fputs(data, f);
+	fputs("\n", f);
+	memset(data, 0, sizeof(data));
+	for (i = 0; i < nodeNum; i++)
+	{
+		memset(data, 0, sizeof(data));
+
+		_itoa(nodes[i].x, exNum, 10);                                                        //å­˜èŠ‚ç‚¹xåæ ‡åœ¨exNumä¸­
+		strcat(data, exNum);
+		memset(exNum, 0, sizeof(exNum));
+		strcat(data, " ");
+
+		_itoa(nodes[i].y, exNum, 10);                                                        //å­˜èŠ‚ç‚¹yåæ ‡åœ¨exNumä¸­
+		strcat(data, exNum);
+		memset(exNum, 0, sizeof(exNum));
+		strcat(data, " ");
+
+		_itoa(nodes[i].num, exNum, 10);                                                      //å­˜èŠ‚ç‚¹numåœ¨exNumä¸­
+		strcat(data, exNum);
+		memset(exNum, 0, sizeof(exNum));
+		strcat(data, "\n");
+
+		fputs(data, f);
+	}
+	fclose(f);
+	return 1;
 }
