@@ -682,13 +682,22 @@ int preserve()
 	char data[100], exNum[10];
 	char readName[20];
 	int len, i, flag = 0;
+	int p = 0;
 	FILE* f;
 	f = fopen("data.txt", "a+");                                                             //以更新方式打开文本
 
 	while (1)                                                                                //判重
 	{
-		if (!InputBox(Identity1, 16, _T("请输入提取时的ID(ID为唯一凭证，\n请妥善保管)"), _T("存档"), _T("请输入ID"), 0, 0, false))
-			return 0;
+		if (p == 0)
+		{
+			if (!InputBox(Identity1, 16, _T("请输入提取时的ID(ID为唯一凭证，\n请妥善保管)"), _T("存档"), _T("请输入ID"), 0, 0, false))
+				return 0;
+		}
+		else if (p > 0)
+		{
+			if (!InputBox(Identity1, 16, _T("请输入提取时的ID(ID为唯一凭证，\n请妥善保管) ID已存在"), _T("存档"), _T("请输入ID"), 0, 0, false))
+				return 0;
+		}
 		TcharToChar(Identity1, Identity);
 
 		flag = 0;
@@ -701,7 +710,10 @@ int preserve()
 				break;
 			}
 		if (flag == 1)                                                                       //存在相同ID再次弹窗输入
+		{
+			p++;
 			continue;
+		}
 		else
 		{
 			fputs(Identity, f);                                                              //存储ID

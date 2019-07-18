@@ -3,5 +3,5 @@ F:\VS_test\C程序设计实验\main.cpp(97): warning C4244: “参数”: 从“
 F:\VS_test\C程序设计实验\main.cpp(606): warning C4267: “=”: 从“size_t”转换到“int”，可能丢失数据
 F:\VS_test\C程序设计实验\main.cpp(630): warning C4267: “=”: 从“size_t”转换到“int”，可能丢失数据
 F:\VS_test\C程序设计实验\main.cpp(648): warning C4267: “=”: 从“size_t”转换到“int”，可能丢失数据
-F:\VS_test\C程序设计实验\main.cpp(695): warning C4267: “=”: 从“size_t”转换到“int”，可能丢失数据
+F:\VS_test\C程序设计实验\main.cpp(704): warning C4267: “=”: 从“size_t”转换到“int”，可能丢失数据
   C程序设计实验.vcxproj -> F:\VS_test\C程序设计实验\x64\Debug\C程序设计实验.exe
